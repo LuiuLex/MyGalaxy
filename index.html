@@ -6,78 +6,93 @@
 
 <style>
 body {
-    margin: 0;
-    padding: 0;
-    background: radial-gradient(circle at top, #1a1a2e, #000);
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.contenido {
+  position: relative;
+  z-index: 2;
+  top: 40%;
+  transform: translateY(-50%);
 }
 
 h1 {
-    margin-top: 100px;
-    font-size: 40px;
+  font-size: 35px;
 }
 
 p {
-    font-size: 20px;
+  font-size: 18px;
 }
 
-.stars {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    background: transparent;
+button {
+  padding: 10px 20px;
+  border: none;
+  background: #ff4d6d;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 20px;
 }
 
-.star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    animation: twinkle 2s infinite;
-}
-
-@keyframes twinkle {
-    0% {opacity: 0;}
-    50% {opacity: 1;}
-    100% {opacity: 0;}
-}
-
-.heart {
-    font-size: 50px;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0% {transform: scale(1);}
-    50% {transform: scale(1.2);}
-    100% {transform: scale(1);}
-}
 </style>
 </head>
 
 <body>
 
-<div class="stars" id="stars"></div>
+<canvas id="galaxy"></canvas>
 
-<h1>🌌 Galaxia de San Valentín</h1>
-<p>Este pequeño universo es solo para ti ❤️</p>
-<div class="heart">💖</div>
+<div class="contenido">
+  <h1>🌌 Para ti ❤️</h1>
+  <p>Eres mi universo entero</p>
+  <button onclick="mostrar()">Haz clic aquí</button>
+  <p id="mensaje" style="display:none;">Te amo muchísimo 💖</p>
+</div>
 
 <script>
-// Crear estrellas aleatorias
-const starsContainer = document.getElementById("stars");
+const canvas = document.getElementById("galaxy");
+const ctx = canvas.getContext("2d");
 
-for (let i = 0; i < 100; i++) {
-    let star = document.createElement("div");
-    star.classList.add("star");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    star.style.top = Math.random() * window.innerHeight + "px";
-    star.style.left = Math.random() * window.innerWidth + "px";
+let stars = [];
 
-    starsContainer.appendChild(star);
+for (let i = 0; i < 200; i++) {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "white";
+  stars.forEach(star => {
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+function mostrar() {
+  document.getElementById("mensaje").style.display = "block";
 }
 </script>
 
