@@ -5,140 +5,115 @@
 <title>💖 Para Ti</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 body{
-  background:black;
+  margin:0;
   overflow:hidden;
-  font-family: 'Segoe UI', sans-serif;
+  background:black;
+  font-family:sans-serif;
   color:white;
 }
 
-/* CANVAS */
-canvas{
-  position:absolute;
-  top:0;
-  left:0;
-}
-
-/* CONTENIDO */
-.container{
+#text{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
   text-align:center;
-  z-index:2;
-  opacity:0;
-  animation:fadeIn 2s ease forwards;
-  animation-delay:1s;
+  z-index:10;
 }
 
 h1{
-  font-size:38px;
-  margin-bottom:10px;
-}
-
-p{
-  font-size:18px;
-  opacity:0.8;
+  font-size:35px;
 }
 
 button{
-  margin-top:20px;
-  padding:12px 25px;
+  padding:10px 20px;
   border:none;
-  border-radius:25px;
+  border-radius:20px;
   background:#ff2e63;
   color:white;
-  font-size:16px;
   cursor:pointer;
-  transition:0.3s;
+  margin-top:10px;
 }
 
-button:hover{
-  background:#ff4d6d;
-  transform:scale(1.1);
-}
-
-/* MENSAJE FINAL */
-#final{
+#msg{
   display:none;
-  margin-top:20px;
-  font-size:22px;
-  animation:fadeIn 1s ease forwards;
-}
-
-/* ANIMACIONES */
-@keyframes fadeIn{
-  from{opacity:0; transform:translate(-50%, -40%);}
-  to{opacity:1; transform:translate(-50%, -50%);}
+  margin-top:15px;
+  font-size:20px;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="space"></canvas>
-
-<div class="container">
+<div id="text">
   <h1>🌌 Para ti ❤️</h1>
-  <p>Toca el botón...</p>
-  <button onclick="showMessage()">Abrir sorpresa</button>
-  <div id="final">Eres mi universo 💖✨</div>
+  <button onclick="mostrar()">Abrir</button>
+  <div id="msg">Eres mi universo 💖✨</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-const canvas = document.getElementById("space");
-const ctx = canvas.getContext("2d");
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+let renderer = new THREE.WebGLRenderer();
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-let stars = [];
+// Crear partículas (galaxia)
+let geometry = new THREE.BufferGeometry();
+let vertices = [];
 
-// Crear estrellas
-for(let i=0;i<300;i++){
-  stars.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
-    size: Math.random()*2,
-    speed: Math.random()*0.5
-  });
+for(let i=0;i<5000;i++){
+  let x = (Math.random()-0.5)*10;
+  let y = (Math.random()-0.5)*10;
+  let z = (Math.random()-0.5)*10;
+  vertices.push(x,y,z);
 }
 
-// Animación tipo “espacio en movimiento”
+geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3));
+
+let material = new THREE.PointsMaterial({
+  color:0xffffff,
+  size:0.02
+});
+
+let points = new THREE.Points(geometry, material);
+scene.add(points);
+
+camera.position.z = 5;
+
+// Movimiento con mouse
+let mouseX = 0;
+let mouseY = 0;
+
+document.addEventListener("mousemove", (e)=>{
+  mouseX = (e.clientX - window.innerWidth/2) * 0.0005;
+  mouseY = (e.clientY - window.innerHeight/2) * 0.0005;
+});
+
+// Movimiento táctil
+document.addEventListener("touchmove", (e)=>{
+  mouseX = (e.touches[0].clientX - window.innerWidth/2) * 0.0005;
+  mouseY = (e.touches[0].clientY - window.innerHeight/2) * 0.0005;
+});
+
 function animate(){
-  ctx.fillStyle="black";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.fillStyle="white";
-
-  stars.forEach(star=>{
-    star.y += star.speed;
-
-    if(star.y > canvas.height){
-      star.y = 0;
-      star.x = Math.random()*canvas.width;
-    }
-
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.size, 0, Math.PI*2);
-    ctx.fill();
-  });
-
   requestAnimationFrame(animate);
+
+  points.rotation.y += 0.001 + mouseX;
+  points.rotation.x += 0.001 + mouseY;
+
+  renderer.render(scene, camera);
 }
 
 animate();
 
 // Mostrar mensaje
-function showMessage(){
-  document.getElementById("final").style.display = "block";
+function mostrar(){
+  document.getElementById("msg").style.display="block";
 }
 </script>
 
