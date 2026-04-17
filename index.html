@@ -46,7 +46,12 @@ const err = document.getElementById('err');
 function showError(msg){ err.textContent = msg; err.style.display='block'; }
 
 // ====== AUDIO ======
+const audio = document.getElementById('audio'); 
 
+  playBtn.onclick = async () => {
+  try { if (audio.paused) { await audio.play(); playBtn.textContent='⏸︎'; } else { audio.pause(); playBtn.textContent='▶︎'; } }
+  catch(e){ showError('///.'); }
+};
 
 // ====== WEBGL CHECK ======
 try { 
